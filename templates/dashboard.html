@@ -1,0 +1,52 @@
+{% extends 'start.html' %}
+
+{% block content %}
+<br>
+<div class="row">
+	<div class="col-md-5">
+		<a class="btn btn-primary  btn-sm btn-block" href="">Zarejestruj się</a>
+		<hr>
+		<div class="card card-body">
+			<h5 id="table-h5" title="Top 5">Tablica wyników</h5>
+			<table class="table table-sm">
+				<tr>
+					<th>Użytkownik</th>
+					<th>Punkty</th>
+                    <th>Turniej</th>
+				</tr>
+				{% for player in players %}
+				<tr>
+					<td>{{player.nazwa}}</td>
+					<td>{{player.punkty}}</td>
+					<td>{{player.grupa}}</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+
+	<div class="col-md-7">
+		<a class="btn btn-primary  btn-sm btn-block" href="">Stwórz turniej</a>
+		<hr>
+		<div class="card card-body">
+			<h5 id="table-h5" title="Last 5">Ostatnie turnieje</h5>
+			<table class="table table-sm">
+				<tr>
+					<th>Założyciel</th>
+					<th>Nazwa turnieju</th>
+					<th>Liczba miejsc</th>
+					<th>Status</th>
+				</tr>
+				{% for contest in tournaments %}
+					<tr>
+						<td>{{contest.wlasciciel}}</td>
+						<td>{{contest.nazwa}}</td>
+						<td>{{contest.miejsca}}</td>
+						<td>{{contest.status}}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock %}
