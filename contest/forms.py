@@ -4,7 +4,7 @@ from django import forms
 
 class CreateUserForm(UserCreationForm):
 
-	date = forms.DateField()
+	date = forms.DateField(required=True)
  
 	class Meta:
 		model = User
