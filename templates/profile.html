@@ -26,7 +26,7 @@
 		<div class="card card-body">
 			<h5>Liczba twoich turniejów</h5>
 			<hr>
-			<h1 style="text-align: center;padding: 10px">{{order_count}}</h1>
+			<h1 style="text-align: center;padding: 10px">{{count}}</h1>
 		</div>
 	</div>
 </div>
@@ -63,9 +63,10 @@
 					<td>{{tournament.name}}</td>
 					<td>{{tournament.date}}</td>
 					<td>{{tournament.time}}</td>
+					<td>{{tournament.slots}}</td>
 					<td>{{tournament.status}}</td>
-					<td><a class="btn btn-sm btn-info" href="">Update</a></td>
-					<td><a class="btn btn-sm btn-danger" href="">Delete</a></td>
+					<td><a class="btn btn-sm btn-info" href="{% url 'contestupdate_page' tournament.id %}">Edytuj</a></td>
+					<td><a class="btn btn-sm btn-danger" href="{% url 'contestdelete_page' tournament.id %}">Usuń</a></td>
 				</tr>
 				{% endfor %}
 			</table>

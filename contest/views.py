@@ -68,11 +68,13 @@ def logout_page(request):
     return redirect('login_page')
 
 # User profile view  
-def profile_page(request, pk):
+def profile_page(request):
     if request.user.is_authenticated:
         user = request.user
-        player = Player.objects.get(id=pk)
-        context = {'user' : user, 'player' : player}
+        player = Player.objects.get(name=request.user)
+        tournaments = player.tournament_set.all()
+        count = tournaments.count()
+        context = {'user' : user, 'player' : player, 'tournaments' : tournaments, 'count' : count}
         return render(request, 'profile.html', context)
     else:
         return redirect('login_page')
@@ -90,10 +92,36 @@ def contestcreator_page(request):
                 player = Player.objects.get(name=request.user)
                 contest.player = player
                 contest.save()
-                return redirect('start_page')
+                return redirect('profile_page')
             
         context = {'form':form}
         return render(request, 'contest_creator.html', context)
     
     else:
         return redirect('login_page')
+    
+# Tournament updater view
+def contestupdate_page(request, pk):
+    tournament = Tournament.objects.get(id=pk)
+    form = CreateContestForm(instance=tournament)
+    
+    if request.method == 'POST':
+        form = CreateContestForm(request.POST, instance=tournament)
+        
+        if form.is_valid():
+            form.save()
+            return redirect('profile_page')
+        
+    context = {'form' : form}
+    return render(request, 'contest_creator.html', context)
+
+# Tournament delet view
+def contestdelete_page(request, pk):
+    tournament = Tournament.objects.get(id=pk)
+    if request.method == 'POST':
+        tournament.delete()
+        return redirect('profile_page')
+    
+    context={'tournament' : tournament}
+    return render(request, 'delete.html', context)
+    

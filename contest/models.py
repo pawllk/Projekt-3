@@ -8,7 +8,7 @@ class Player(models.Model):
     date = models.DateField(auto_now_add=False, null=True)
     
     def __str__(self) -> str:
-        return f"{self.id}-{self.name}"
+        return f"{self.name}"
     
 class Tournament(models.Model):
     SLOTS = (
@@ -33,4 +33,4 @@ class Tournament(models.Model):
     status = models.CharField(max_length=200, verbose_name="Status", choices=STATUS, null=True)
     
     def __str__(self) -> str:
-         return f"{self.id}-{self.name}-{self.status}"
+         return f"{self.name}"
