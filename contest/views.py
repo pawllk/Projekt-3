@@ -1,10 +1,9 @@
-from multiprocessing import context
-from unicodedata import name
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Player
 from .models import Tournament
@@ -101,6 +100,7 @@ def contestcreator_page(request):
         return redirect('login_page')
     
 # Tournament updater view
+@login_required(login_url='login')
 def contestupdate_page(request, pk):
     tournament = Tournament.objects.get(id=pk)
     form = CreateContestForm(instance=tournament)
@@ -116,6 +116,7 @@ def contestupdate_page(request, pk):
     return render(request, 'contest_creator.html', context)
 
 # Tournament delet view
+@login_required(login_url='login')
 def contestdelete_page(request, pk):
     tournament = Tournament.objects.get(id=pk)
     if request.method == 'POST':
