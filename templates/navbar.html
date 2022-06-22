@@ -5,14 +5,21 @@
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item active">
-        <a class="nav-link" href="">Dashboard</a>
+        <a class="nav-link" href="{% url 'start_page' %}">Główna strona</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="">Products</a>
+        <a class="nav-link" href="{% url 'profile_page' %}">Profil</a>
       </li>
     </ul>
   </div>
-
-  <span class="hello-msg">Hello, {{request.user}}</span>
-  <span ><a  class="hello-msg" href="{% url 'logout_page' %}">Logout</a></span>
+  <span class="hello-msg">Witaj, {{request.user}}</span>
+  <span ><a  class="hello-msg" href="{% url 'logout_page' %}">Wyloguj/Zaloguj</a></span>
 </nav>
+
+<style>
+  .hello-msg{
+    font-size: 18px;
+    color: #fff;
+    margin-right: 20px;
+}
+</style>

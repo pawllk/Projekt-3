@@ -1,4 +1,3 @@
-from pickle import TRUE
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -9,7 +8,7 @@ class Player(models.Model):
     date = models.DateField(auto_now_add=False, null=True)
     
     def __str__(self) -> str:
-        return f"{(self.id-1)}-{self.name}"
+        return f"{self.id}-{self.name}"
     
 class Tournament(models.Model):
     SLOTS = (
@@ -26,9 +25,12 @@ class Tournament(models.Model):
         ('ENDED','ENDED')
     )
     
-    player = models.ForeignKey(to=Player, on_delete=models.CASCADE, null=TRUE)
+    player = models.ForeignKey(to=Player, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=200, verbose_name="Name", null=True)
     date = models.DateField(auto_now_add=False, null=True)
     time = models.TimeField(auto_now_add=False, null=True)
     slots = models.CharField(max_length=200, verbose_name="Slots", choices=SLOTS, null=True)
     status = models.CharField(max_length=200, verbose_name="Status", choices=STATUS, null=True)
+    
+    def __str__(self) -> str:
+         return f"{self.id}-{self.name}-{self.status}"

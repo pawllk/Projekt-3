@@ -1,0 +1,56 @@
+{% extends 'start.html' %}
+{% block content %}
+<style>
+	.contest-creator{
+		text-align: center;
+	}
+
+	form{
+		margin-bottom: 50px;
+	}
+
+	input{
+		margin-top: 10px;
+	}
+</style>
+<br>
+<div class="contest-creator">
+	<h5>Creator turniejowy</h5>
+	<form method="POST" action="">
+		{% csrf_token %}
+		<div>
+			<div>
+				<span>{{form.name.label}}</span>
+			</div>
+			{{form.name}}
+		</div>
+		<div>
+			<div>
+				<span>{{form.date.label}}</span>
+			</div>
+			{{form.date}}
+		</div>
+		<div>
+			<div>
+				<span>{{form.time.label}}</span>
+			</div>
+			{{form.time}}
+		</div>
+		<div>
+			<div>
+				<span>{{form.slots.label}}</span>
+			</div>
+			{{form.slots}}
+		</div>
+		<div>
+			<div>
+				<span>{{form.status.label}}</span>
+			</div>
+			{{form.status}}
+		</div>
+		<input type="submit" name="Stwórz">
+	</form>
+	{{form.errors}}
+</div>
+<hr>
+{% endblock %}
