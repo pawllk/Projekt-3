@@ -1,3 +1,4 @@
+from unittest.util import strclass
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -34,3 +35,6 @@ class Tournament(models.Model):
     
     def __str__(self) -> str:
          return f"{self.name}"
+     
+    def get_status(self) -> str:
+        return f"{self.status}"

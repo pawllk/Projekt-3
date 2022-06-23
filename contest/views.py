@@ -1,3 +1,4 @@
+from itertools import count
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate
@@ -13,8 +14,18 @@ from .forms import CreateContestForm
 # Create your views here.
 def start_page(request):
     tournaments = Tournament.objects.all()
-    context = {'tournaments': tournaments}
-    return render(request, 'dashboard.html', context)
+    count = tournaments.count()
+    pending = tournaments.filter(status="PENDING").count()
+    tournaments_started = tournaments.filter(status="STARTED")
+    started = tournaments_started.count()
+    context = {'tournaments' : tournaments , 'started' : started, 'pending' : pending, 
+               'tournaments_started' : tournaments_started, 'count' : count }
+    
+    if request.user.is_authenticated:
+        return render(request, 'user.html', context) 
+    else:
+        return render(request, 'guest.html', context)    
+    
 
 # Register view
 def register_page(request):
@@ -57,7 +68,7 @@ def login_page(request):
                 login(request, user)
                 return redirect('profile_page')
             else:
-                messages.info('request', 'Username or Password is incorrect')
+                messages.info(request, 'Username or Password is incorrect')
         context = {}
         return render(request, 'login.html', context)
 
@@ -72,8 +83,10 @@ def profile_page(request):
         user = request.user
         player = Player.objects.get(name=request.user)
         tournaments = player.tournament_set.all()
-        count = tournaments.count()
-        context = {'user' : user, 'player' : player, 'tournaments' : tournaments, 'count' : count}
+        count_arraving = tournaments.filter(status="PENDING").count()
+        count_all = tournaments.count()
+        context = {'user' : user, 'player' : player, 'tournaments' : tournaments, 
+                   'count_all' : count_all, 'count_arraving' : count_arraving}
         return render(request, 'profile.html', context)
     else:
         return redirect('login_page')
@@ -104,25 +117,29 @@ def contestcreator_page(request):
 def contestupdate_page(request, pk):
     tournament = Tournament.objects.get(id=pk)
     form = CreateContestForm(instance=tournament)
-    
-    if request.method == 'POST':
-        form = CreateContestForm(request.POST, instance=tournament)
+    if tournament.get_status() == 'STARTED':
+        return redirect('profile_page')
+    else:
+        if request.method == 'POST':
+            form = CreateContestForm(request.POST, instance=tournament)
+            
+            if form.is_valid():
+                form.save()
+                return redirect('profile_page')
         
-        if form.is_valid():
-            form.save()
-            return redirect('profile_page')
-        
-    context = {'form' : form}
-    return render(request, 'contest_creator.html', context)
+        context = {'form' : form}
+        return render(request, 'contest_creator.html', context)
 
 # Tournament delet view
 @login_required(login_url='login')
 def contestdelete_page(request, pk):
     tournament = Tournament.objects.get(id=pk)
-    if request.method == 'POST':
-        tournament.delete()
+    if tournament.get_status() == 'STARTED':
         return redirect('profile_page')
+    else:
+        if request.method == 'POST':
+            tournament.delete()
+            return redirect('profile_page')
     
-    context={'tournament' : tournament}
-    return render(request, 'delete.html', context)
-    
+        context={'tournament' : tournament}
+        return render(request, 'delete.html', context)
