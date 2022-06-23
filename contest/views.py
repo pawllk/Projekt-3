@@ -11,7 +11,7 @@ from .models import Tournament
 from .models import Participants
 from .forms import CreateUserForm
 from .forms import CreateContestForm
-from .forms import AddUserForm
+from .filter import ContestFilter
 
 # Create your views here.
 def start_page(request):
@@ -20,8 +20,12 @@ def start_page(request):
     pending = tournaments.filter(status="PENDING").count()
     tournaments_started = tournaments.filter(status="STARTED")
     started = tournaments_started.count()
+    filter = ContestFilter(request.GET, queryset=tournaments)
+    tournaments = filter.qs
+    filter_started = ContestFilter(request.GET, queryset=tournaments_started)
+    tournaments_started = filter.qs
     context = {'tournaments' : tournaments , 'started' : started, 'pending' : pending, 
-               'tournaments_started' : tournaments_started, 'count' : count }
+               'tournaments_started' : tournaments_started, 'count' : count, 'filter' : filter}
     
     if request.user.is_authenticated:
         return render(request, 'user.html', context) 
@@ -87,8 +91,11 @@ def profile_page(request):
         tournaments = player.tournament_set.all()
         count_arraving = tournaments.filter(status="PENDING").count()
         count_all = tournaments.count()
+        filter = ContestFilter(request.GET, queryset=tournaments)
+        tournaments = filter.qs
         context = {'user' : user, 'player' : player, 'tournaments' : tournaments, 
-                   'count_all' : count_all, 'count_arraving' : count_arraving}
+                   'count_all' : count_all, 'count_arraving' : count_arraving,
+                   'filter' : filter}
         return render(request, 'profile.html', context)
     else:
         return redirect('login_page')

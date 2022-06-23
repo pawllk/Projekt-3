@@ -28,4 +28,4 @@ class AddUserForm(forms.ModelForm):
     
     class Meta:
         model = Participants
-        fields = ['tournament', 'player']
+        fields = ['player']

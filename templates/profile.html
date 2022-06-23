@@ -38,7 +38,18 @@
 		  </form>
 		</div>
 	</div>
-	
+</div>
+<br>
+
+<div class="row">
+	<div class="col">
+		<div class="card card-body">
+			<form method="get">
+				{{filter.form}}
+		    <button class="btn btn-primary" type="submit">Search</button>
+		  </form>
+		</div>
+	</div>
 </div>
 <br>
 
@@ -67,6 +78,7 @@
 					<td>{{tournament.slots}}</td>
 					<td>{{tournament.status}}</td>
 					<td><a class="btn btn-sm btn-success" href="{% url 'add_page' tournament.id %}">Zaproś</a></td>
+					<td><a class="btn btn-sm btn-dark" href="">Uczestnicy</a></td>
 					<td><a class="btn btn-sm btn-info" href="{% url 'contestupdate_page' tournament.id %}">Edytuj</a></td>
 					<td><a class="btn btn-sm btn-danger" href="{% url 'contestdelete_page' tournament.id %}">Usuń</a></td>
 				</tr>
