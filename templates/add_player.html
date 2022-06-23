@@ -1,0 +1,26 @@
+{%  extends 'start.html' %}
+{% load static %}
+{% block content %}
+<style>
+    #add{
+        text-align: center;
+    }
+</style>
+
+<div class="row">
+	<div class="card card-body" id='add'>
+		<h5>Dodaj/usuń miejsce z turnieju graczy do turnieju</h5>
+		<br>
+		<form method="POST" action="">
+            {% csrf_token %}
+            {{ formset.management_form  }}
+            {% for form in formset %}
+				{{form}}
+				<hr>
+			{% endfor %}
+			<input type="submit" name="Submit" value="Dodaj">
+		</form>
+	</div>
+</div>
+
+{% endblock %}

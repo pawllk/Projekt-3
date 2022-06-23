@@ -1,4 +1,3 @@
-from unittest.util import strclass
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -34,7 +33,14 @@ class Tournament(models.Model):
     status = models.CharField(max_length=200, verbose_name="Status", choices=STATUS, null=True)
     
     def __str__(self) -> str:
-         return f"{self.name}"
+        return f"{self.name}"
+    
+    def get_slots(self) -> str:
+        return self.slots
      
     def get_status(self) -> str:
         return f"{self.status}"
+    
+class Participants(models.Model):
+    tournament = models.ForeignKey(to=Tournament, on_delete=models.CASCADE, null=True)
+    player = models.ForeignKey(to=Player, on_delete=models.DO_NOTHING, null=True)

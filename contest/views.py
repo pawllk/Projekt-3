@@ -1,15 +1,17 @@
-from itertools import count
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
+from django.forms import inlineformset_factory 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Player
 from .models import Tournament
+from .models import Participants
 from .forms import CreateUserForm
 from .forms import CreateContestForm
+from .forms import AddUserForm
 
 # Create your views here.
 def start_page(request):
@@ -104,6 +106,8 @@ def contestcreator_page(request):
                 player = Player.objects.get(name=request.user)
                 contest.player = player
                 contest.save()
+                for i in range(int(contest.get_slots())):
+                    Participants.objects.create(tournament=contest)
                 return redirect('profile_page')
             
         context = {'form':form}
@@ -143,3 +147,18 @@ def contestdelete_page(request, pk):
     
         context={'tournament' : tournament}
         return render(request, 'delete.html', context)
+    
+# Tournament app view
+@login_required(login_url='login')
+def add_page(request, pk):
+    AddPageFormSet = inlineformset_factory(Tournament, Participants,fields=('tournament','player'), extra=0)
+    tournament = Tournament.objects.get(id=pk)
+    players = tournament.participants_set.all()
+    form = AddPageFormSet(queryset=players, instance=tournament)
+    if request.method == 'POST':
+        form = AddPageFormSet(request.POST, instance=tournament)
+        if form.is_valid():
+            form.save()
+            return redirect('profile_page')
+    context={'formset' : form}
+    return render(request, 'add_player.html', context)
