@@ -16,12 +16,18 @@
 </style>
 <br>
 <div class="delete">
-	<h5>Czy na pewno chcesz usunąc turniej: "{{tournament}}"?</h5>
+	<h5>Czy rozpocząć turniej: "{{tournament}}"?</h5>
         <form action="" method="POST">
             {% csrf_token %}
+            <div>
+                <div>
+                    <span>{{form.changed_status.label}}</span>
+                </div>
+                {{form.status}}
+            </div>
             <a href="{% url 'profile_page' %}"><input class="btn btn-info" type="button" value="Nie"></a>
-            <input class="btn btn-danger" type="submit" value="Tak">     
-		</form>
+            <input class="btn btn-danger" type="submit" value="Tak">   
+        </form>
 </div>
 <hr>
 {% endblock %}

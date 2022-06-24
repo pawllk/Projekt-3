@@ -11,5 +11,7 @@ urlpatterns = [
     path('contest_update/<str:pk>', views.contestupdate_page, name="contestupdate_page"),
     path('contest_delete/<str:pk>', views.contestdelete_page, name="contestdelete_page"),
     path('add_user/<str:pk>', views.add_page, name="add_page"),
-    path('view/<str:pk>', views.view_page, name="view_page")
+    path('view/<str:pk>', views.view_page, name="view_page"),
+    path('start_contest/<str:pk>', views.startcontest_page, name="startcontest_page"),
+    path('add_match/<str:pk>', views.add_match, name="add_match")
 ]

@@ -1,3 +1,4 @@
+from multiprocessing import context
 import random
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -10,8 +11,11 @@ from django.contrib import messages
 from .models import Player
 from .models import Tournament
 from .models import Participants
+from .models import Match
 from .forms import CreateUserForm
 from .forms import CreateContestForm
+from .forms import StartContestForm
+from .forms import AddResultForm
 from .filter import ContestFilter
 
 # Create your views here.
@@ -127,7 +131,7 @@ def contestcreator_page(request):
         return redirect('login_page')
     
 # Tournament updater view
-@login_required(login_url='login')
+@login_required(login_url='login_page')
 def contestupdate_page(request, pk):
     tournament = Tournament.objects.get(id=pk)
     form = CreateContestForm(instance=tournament)
@@ -146,44 +150,104 @@ def contestupdate_page(request, pk):
         return render(request, 'contest_creator.html', context)
 
 # Tournament delet view
-@login_required(login_url='login')
+@login_required(login_url='login_page')
 def contestdelete_page(request, pk):
     tournament = Tournament.objects.get(id=pk)
-    
-    if tournament.get_status() == 'STARTED':
+    if request.method == 'POST':
+        tournament.delete()
         return redirect('profile_page')
-    else:
-        if request.method == 'POST':
-            tournament.delete()
-            return redirect('profile_page')
     
-        context={'tournament' : tournament}
-        return render(request, 'delete.html', context)
+    context={'tournament' : tournament}
+    return render(request, 'delete.html', context)
     
 # Tournament add player view
-@login_required(login_url='login')
+@login_required(login_url='login_page')
 def add_page(request, pk):
-    AddPageFormSet = inlineformset_factory(Tournament, Participants,fields=('tournament','player'), extra=0)
     tournament = Tournament.objects.get(id=pk)
-    players = tournament.participants_set.all()
-    form = AddPageFormSet(queryset=players, instance=tournament)
+    if tournament.status == "PENDING":
+        AddPageFormSet = inlineformset_factory(Tournament, Participants,
+                                           fields=('tournament','player'),
+                                           extra=0,
+                                           can_delete=False,
+                                           )
+        players = tournament.participants_set.all()
+        form = AddPageFormSet(queryset=players, instance=tournament)
     
-    if request.method == 'POST':
-        form = AddPageFormSet(request.POST, instance=tournament)
-        if form.is_valid():
-            form.save()
-            return redirect('profile_page')
-        
-    context={'formset' : form}
-    return render(request, 'add_player.html', context)
+        if request.method == 'POST':
+            form = AddPageFormSet(request.POST, instance=tournament)
+            if form.is_valid():
+                form.save()
+                return redirect('profile_page')
 
-# View of tournament
+        context={'formset' : form}
+        return render(request, 'add_player.html', context)
+    else:
+        return redirect('profile_page')
+        
+   
+
+# View of tournament view
 def view_page(request, pk):
     tournament = Tournament.objects.get(id=pk)
     players = tournament.participants_set.all()
+    games_first = tournament.match_set.all().filter(phase="FAZA I")
+    games_second = tournament.match_set.all().filter(phase="FAZA II")
+    games_third = tournament.match_set.all().filter(phase="FAZA III")
     count = players.count()
     matches = (count  - 1) 
-
     context = {'players' : players, 'count' : count, 'tournament' : tournament,
-               'matches' : matches}
+               'matches' : matches, 'games_first' : games_first,
+               'games_second' : games_second, 'games_third' : games_third}
+    
     return render(request, 'view.html', context)
+
+# Start tournament view
+@login_required(login_url='login_page')
+def startcontest_page(request, pk):
+    tournament = Tournament.objects.get(id=pk)
+    players = tournament.participants_set.all()
+    form = StartContestForm(instance=tournament)
+    #creat list of names to draw for game lader
+    draw = []
+    for player in players:
+        draw.append(player.player.name)
+    random.shuffle(draw)
+    
+    if tournament.status == "PENDING":
+        if request.method == 'POST':
+            form = StartContestForm(request.POST, instance=tournament)
+            if form.is_valid():
+                form.save()
+                for i in range(players.count()//2):
+                    Match.objects.create(
+                        tournament=tournament,
+                        a_player=draw.pop(),
+                        b_player=draw.pop()
+                        )
+                return redirect('profile_page')
+            
+        context = {'form' : form}
+        return render(request, 'startcontest.html', context)
+
+    else:
+        return redirect('profile_page')
+    
+# Viev for adding new matches in next phase
+@login_required(login_url='login_page')
+def add_match(request, pk):
+    tournament = Tournament.objects.get(id=pk)
+    games_first = tournament.match_set.all().filter(phase="FAZA I")
+    games_second = tournament.match_set.all().filter(phase="FAZA II")
+    games_third = tournament.match_set.all().filter(phase="FAZA III")
+    form = AddResultForm()
+    if request.method == 'POST':
+        form = AddResultForm(request.POST)
+        if form.is_valid():
+            match = form.save()
+            match.tournament = tournament
+            match.save()
+            return redirect('profile_page')
+        
+    context = {'form' : form, 'games_first' : games_first,
+               'games_second' : games_second, 'games_third' : games_third}
+    return render(request, 'match_creator.html', context)
