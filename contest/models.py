@@ -1,3 +1,4 @@
+from cmath import phase
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -14,9 +15,7 @@ class Tournament(models.Model):
     SLOTS = (
         ('2','2'),
         ('4','4'),
-        ('6','6'),
         ('8','8'),
-        ('10','10')
     )
     
     STATUS = (
@@ -25,12 +24,19 @@ class Tournament(models.Model):
         ('ENDED','ENDED')
     )
     
+    PHASE = (
+        ('STARTING LADDER','STARTING LADDER'),
+        ('SEMIFINAL','SEMIFINAL'),
+        ('FINAL','FINAL')
+    )
+    
     player = models.ForeignKey(to=Player, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=200, verbose_name="Name", null=True)
     date = models.DateField(auto_now_add=False, null=True)
     time = models.TimeField(auto_now_add=False, null=True)
     slots = models.CharField(max_length=200, verbose_name="Slots", choices=SLOTS, null=True)
-    status = models.CharField(max_length=200, verbose_name="Status", choices=STATUS, null=True)
+    status = models.CharField(max_length=200, verbose_name="Status", choices=STATUS, default="PENDING")
+    phase = models.CharField(max_length=200, verbose_name="Faza", choices=PHASE, default="STARTING LADDER")
     
     def __str__(self) -> str:
         return f"{self.name}"

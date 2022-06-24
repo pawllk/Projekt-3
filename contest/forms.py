@@ -12,17 +12,11 @@ class CreateUserForm(UserCreationForm):
 		model = User
 		fields = ['username', 'email', 'date', 'password1', 'password2']
   
-class ContestFilter(forms.ModelForm):
-    
-    class Meta:
-        model = Tournament
-        fields = '__all__'
-  
 class CreateContestForm(forms.ModelForm):
     
     class Meta:
         model = Tournament
-        fields = ['name', 'date', 'time', 'slots', 'status']
+        fields = ['name', 'date', 'time', 'slots', 'status' , 'phase']
         
 class AddUserForm(forms.ModelForm):
     

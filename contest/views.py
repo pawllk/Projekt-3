@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate
@@ -22,14 +23,14 @@ def start_page(request):
     started = tournaments_started.count()
     filter = ContestFilter(request.GET, queryset=tournaments)
     tournaments = filter.qs
-    filter_started = ContestFilter(request.GET, queryset=tournaments_started)
-    tournaments_started = filter.qs
-    context = {'tournaments' : tournaments , 'started' : started, 'pending' : pending, 
-               'tournaments_started' : tournaments_started, 'count' : count, 'filter' : filter}
-    
     if request.user.is_authenticated:
+        context={'tournaments' : tournaments, 'filter' : filter,
+                'count' : count, 'started' : started, 'pending' : pending}
         return render(request, 'user.html', context) 
+    
     else:
+        context={'tournaments_started' : tournaments_started,
+                'started' : started, 'pending' : pending}
         return render(request, 'guest.html', context)    
     
 
@@ -93,10 +94,12 @@ def profile_page(request):
         count_all = tournaments.count()
         filter = ContestFilter(request.GET, queryset=tournaments)
         tournaments = filter.qs
+        
         context = {'user' : user, 'player' : player, 'tournaments' : tournaments, 
                    'count_all' : count_all, 'count_arraving' : count_arraving,
                    'filter' : filter}
         return render(request, 'profile.html', context)
+    
     else:
         return redirect('login_page')
 
@@ -128,6 +131,7 @@ def contestcreator_page(request):
 def contestupdate_page(request, pk):
     tournament = Tournament.objects.get(id=pk)
     form = CreateContestForm(instance=tournament)
+    
     if tournament.get_status() == 'STARTED':
         return redirect('profile_page')
     else:
@@ -145,6 +149,7 @@ def contestupdate_page(request, pk):
 @login_required(login_url='login')
 def contestdelete_page(request, pk):
     tournament = Tournament.objects.get(id=pk)
+    
     if tournament.get_status() == 'STARTED':
         return redirect('profile_page')
     else:
@@ -155,17 +160,30 @@ def contestdelete_page(request, pk):
         context={'tournament' : tournament}
         return render(request, 'delete.html', context)
     
-# Tournament app view
+# Tournament add player view
 @login_required(login_url='login')
 def add_page(request, pk):
     AddPageFormSet = inlineformset_factory(Tournament, Participants,fields=('tournament','player'), extra=0)
     tournament = Tournament.objects.get(id=pk)
     players = tournament.participants_set.all()
     form = AddPageFormSet(queryset=players, instance=tournament)
+    
     if request.method == 'POST':
         form = AddPageFormSet(request.POST, instance=tournament)
         if form.is_valid():
             form.save()
             return redirect('profile_page')
+        
     context={'formset' : form}
     return render(request, 'add_player.html', context)
+
+# View of tournament
+def view_page(request, pk):
+    tournament = Tournament.objects.get(id=pk)
+    players = tournament.participants_set.all()
+    count = players.count()
+    matches = (count  - 1) 
+
+    context = {'players' : players, 'count' : count, 'tournament' : tournament,
+               'matches' : matches}
+    return render(request, 'view.html', context)
