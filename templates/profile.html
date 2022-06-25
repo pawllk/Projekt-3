@@ -69,7 +69,7 @@
 					<th style="text-align: center;">Opcje</th>
 					<th></th>
 					<th></th>
-					<th>Wyniki</th>
+					<th style="text-align: center;">Wyniki</th>
 				</tr>
 
 				{% for tournament in tournaments %}
@@ -85,7 +85,10 @@
 					<td style="text-align: center;"><a class="btn btn-sm btn-secondary" href="{% url 'startcontest_page' tournament.id %}">Wystartuj</a></td>
 					<td style="text-align: center;"><a class="btn btn-sm btn-info" href="{% url 'contestupdate_page' tournament.id %}">Edytuj</a></td>
 					<td style="text-align: center;"><a class="btn btn-sm btn-danger" href="{% url 'contestdelete_page' tournament.id %}">Usuń</a></td>	
-					<td style="text-align: center;"><a class="btn btn-sm btn-danger" href="{% url 'add_match' tournament.id %}">Dodaj</a></td>	
+					<td style="text-align: center;">
+						<a class="btn btn-sm btn-danger" href="{% url 'add_match' tournament.id %}">Dodaj</a>
+						<a class="btn btn-sm btn-success" href="{% url 'end_match' tournament.id %}">Zakończ</a>
+					</td>	
 				</tr>
 				{% endfor %}
 			</table>

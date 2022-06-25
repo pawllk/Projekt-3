@@ -13,5 +13,6 @@ urlpatterns = [
     path('add_user/<str:pk>', views.add_page, name="add_page"),
     path('view/<str:pk>', views.view_page, name="view_page"),
     path('start_contest/<str:pk>', views.startcontest_page, name="startcontest_page"),
-    path('add_match/<str:pk>', views.add_match, name="add_match")
+    path('add_match/<str:pk>', views.add_match, name="add_match"),
+    path('end_tournament/<str:pk>', views.end_match, name="end_match")
 ]

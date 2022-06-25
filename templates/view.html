@@ -47,85 +47,103 @@
 
 <br>
 
-<div class="col-md">
-	<div class="card card-body" style="text-align: center;">
-		<h5>Drabinka</h5>
-		<table class="table table-sm" >
+<div class="row">
+	<div class="col-md">
+		<div class="card card-body" style="text-align: center;">
+			<h5>Zwyciężca</h5>
+			<table class="table table-sm">
+                {% for win in winner %}
+                    <tr >
+                        <td>{{win.player.name}}</td>
+                    </tr> 
+                {% endfor %}
+			</table>
+		</div>
+	</div>
+</div>
+
+<br>
+
+<div class="row">
+	<div class="col-md">
+		<div class="card card-body" style="text-align: center;">
+			<table>
 				<tr>
-					<td>
-						<table>
-							<tr>
-								<th>FAZA I</th>
-								<th>Wynik</th>
-							</tr>
-							{% for game_first in games_first %}
-								<tr><td></td></tr>
-								<tr>
-									<td style="background-color: red;">
-										{{game_first.a_player}}
-									</td>
-								</tr>
-								<tr>
-									<td>vs</td>
-								</tr>
-								<tr>
-									<td style="background-color: cyan;">
-										{{game_first.b_player}}
-									</td>
-								</tr>
-                                <tr><td></td></tr>
-							{% endfor %}
-						</table>
-					</td>
-					<td>
-						<table>
-							<tr>
-								<th>FAZA II</th>
-								<th>Wynik</th>
-							</tr>
-                            {% for game_second in games_second %}
-								<tr><td></td></tr>
-								<tr>
-									<td style="background-color: red;">
-										{{game_second.a_player}}
-									</td>
-								</tr>
-								<tr>
-									<td>vs</td>
-								</tr>
-								<tr>
-									<td style="background-color: cyan;">
-										{{game_second.b_player}}
-									</td>
-								</tr>
-							{% endfor %}
-						</table>
-					<td>
-						<table>
-							<tr>
-								<th>FAZA III</th>
-								<th>Wyniki</th>
-							</tr>
-                            {% for game_third in games_third %}
-                                <tr><td></td></tr>
-                                <tr>
-                                    <td style="background-color: red;">
-                                        {{game_third.a_player}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>vs</td>
-                                </tr>
-                                <tr>
-                                    <td style="background-color: cyan;">
-                                        {{game_third.b_player}}
-                                    </td>
-                                </tr>
-                        	{% endfor %}
-						</table>
-					</td>
+					<th>FAZA I</th>
 				</tr>
-		</table>
+				{% for game_first in games_first %}
+					<tr><td></td></tr>
+					<tr>
+						<td style="background-color: red;">
+							{{game_first.a_player}}
+						</td>
+					</tr>
+					<tr>
+						<td>vs</td>
+					</tr>
+					<tr>
+						<td style="background-color: cyan;">
+							{{game_first.b_player}}
+						</td>
+					</tr>
+					<tr><td><hr></td></tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+
+	<div class="col-md">
+		<div class="card card-body" style="text-align: center;">
+			<table>
+				<tr>
+					<th>FAZA II</th>
+				</tr>
+				{% for game_second in games_second %}
+					<tr><td></td></tr>
+					<tr>
+						<td style="background-color: red;">
+							{{game_second.a_player}}
+						</td>
+					</tr>
+					<tr>
+						<td>vs</td>
+					</tr>
+					<tr>
+						<td style="background-color: cyan;">
+							{{game_second.b_player}}
+						</td>
+					</tr>
+					<tr><td><hr></td></tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+
+	<div class="col-md">
+		<div class="card card-body" style="text-align: center;">
+			<table>
+				<tr>
+					<th>FAZA III</th>
+				</tr>
+				{% for game_third in games_third %}
+					<tr><td></td></tr>
+					<tr>
+						<td style="background-color: red;">
+							{{game_third.a_player}}
+						</td>
+					</tr>
+					<tr>
+						<td>vs</td>
+					</tr>
+					<tr>
+						<td style="background-color: cyan;">
+							{{game_third.b_player}}
+						</td>
+					</tr>
+					<tr><td><hr></td></tr>
+				{% endfor %}
+			</table>
+		</div>
 	</div>
 </div>
 {% endblock %}

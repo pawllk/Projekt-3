@@ -16,6 +16,7 @@ from .forms import CreateUserForm
 from .forms import CreateContestForm
 from .forms import StartContestForm
 from .forms import AddResultForm
+from .forms import EndContestForm
 from .filter import ContestFilter
 
 # Create your views here.
@@ -136,9 +137,7 @@ def contestupdate_page(request, pk):
     tournament = Tournament.objects.get(id=pk)
     form = CreateContestForm(instance=tournament)
     
-    if tournament.get_status() == 'STARTED':
-        return redirect('profile_page')
-    else:
+    if tournament.get_status() == 'PENDING':
         if request.method == 'POST':
             form = CreateContestForm(request.POST, instance=tournament)
             
@@ -148,6 +147,10 @@ def contestupdate_page(request, pk):
         
         context = {'form' : form}
         return render(request, 'contest_creator.html', context)
+        
+    else:
+        return redirect('profile_page')
+        
 
 # Tournament delet view
 @login_required(login_url='login_page')
@@ -193,11 +196,13 @@ def view_page(request, pk):
     games_first = tournament.match_set.all().filter(phase="FAZA I")
     games_second = tournament.match_set.all().filter(phase="FAZA II")
     games_third = tournament.match_set.all().filter(phase="FAZA III")
+    winner = tournament.winner_set.all()
     count = players.count()
     matches = (count  - 1) 
     context = {'players' : players, 'count' : count, 'tournament' : tournament,
                'matches' : matches, 'games_first' : games_first,
-               'games_second' : games_second, 'games_third' : games_third}
+               'games_second' : games_second, 'games_third' : games_third,
+               'winner' : winner}
     
     return render(request, 'view.html', context)
 
@@ -236,18 +241,43 @@ def startcontest_page(request, pk):
 @login_required(login_url='login_page')
 def add_match(request, pk):
     tournament = Tournament.objects.get(id=pk)
-    games_first = tournament.match_set.all().filter(phase="FAZA I")
-    games_second = tournament.match_set.all().filter(phase="FAZA II")
-    games_third = tournament.match_set.all().filter(phase="FAZA III")
-    form = AddResultForm()
-    if request.method == 'POST':
-        form = AddResultForm(request.POST)
-        if form.is_valid():
-            match = form.save()
-            match.tournament = tournament
-            match.save()
-            return redirect('profile_page')
-        
-    context = {'form' : form, 'games_first' : games_first,
-               'games_second' : games_second, 'games_third' : games_third}
-    return render(request, 'match_creator.html', context)
+    if tournament.status == "STARTED":
+        games_first = tournament.match_set.all().filter(phase="FAZA I")
+        games_second = tournament.match_set.all().filter(phase="FAZA II")
+        games_third = tournament.match_set.all().filter(phase="FAZA III")
+        form = AddResultForm()
+        if request.method == 'POST':
+            form = AddResultForm(request.POST)
+            if form.is_valid():
+                match = form.save()
+                match.tournament = tournament
+                match.save()
+                return redirect('profile_page')
+            
+        context = {'form' : form, 'games_first' : games_first,
+                'games_second' : games_second, 'games_third' : games_third}
+        return render(request, 'match_creator.html', context)
+    else:
+        return redirect('profile_page')
+
+@login_required(login_url='login_page')
+def end_match(request, pk):
+    tournament = Tournament.objects.get(id=pk)
+    tournament = Tournament.objects.get(id=pk)
+    if tournament.status == "STARTED":
+        form = EndContestForm()
+        if request.method == "POST":
+            form = EndContestForm(request.POST)
+            if form.is_valid():
+                winner = form.save()
+                winner.tournament = tournament
+                winner.save()
+                tournament.status = "ENDED"
+                tournament.save()
+                return redirect('profile_page')
+            
+        context = {'form' : form, 'tournament' : tournament}
+        return render(request, 'end_match.html', context)
+
+    else:
+        return redirect('profile_page')

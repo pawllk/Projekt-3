@@ -5,6 +5,7 @@ from django import forms
 from .models import Tournament
 from .models import Participants
 from .models import Match
+from .models import Winner
 
 class CreateUserForm(UserCreationForm):
     
@@ -36,5 +37,12 @@ class AddResultForm(forms.ModelForm):
     
     class Meta:
         model = Match
+        fields = '__all__'
+        exclude = ['tournament']
+        
+class EndContestForm(forms.ModelForm):
+    
+    class Meta:
+        model = Winner
         fields = '__all__'
         exclude = ['tournament']

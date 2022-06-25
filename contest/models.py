@@ -60,3 +60,6 @@ class Match(models.Model):
 class Winner(models.Model):
     tournament = models.ForeignKey(to=Tournament, on_delete=models.CASCADE, null=True)
     player = models.ForeignKey(to=Player, on_delete=models.CASCADE, null=True)
+    
+    def __str__(self) -> str:
+        return f"{self.player.name}"
